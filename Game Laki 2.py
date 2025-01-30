@@ -9,7 +9,7 @@ page_number = 1
 address_record = 'record.txt'
 # رنگ لاک پشت
 color_index = 0
-AllColorLaki = ['DarkGreen','MediumBlue','DarkSlateGray', 'Indigo', 'Maroon', 'Lime', 'Magenta', 'Red', 'Aqua', 'Orange']
+AllColorLaki = ('DarkGreen','MediumBlue','DarkSlateGray', 'Indigo', 'Maroon', 'Lime', 'Magenta', 'Red', 'Aqua', 'Orange')
 
 
 def setup_screen():
@@ -23,10 +23,12 @@ def setup_screen():
 def draw_first_page():
     food.st()
     Laki.shapesize(2)
-    game_screen.onkey(lambda: None, 'a')
-    game_screen.onkey(lambda: None, 'd')
+    game_screen.onkey(lambda: None, 'Right')
+    game_screen.onkey(lambda: None, 'Left')
+    game_screen.onkey(draw_second_page, 'w')
     game_screen.onkey(setup_game_start, 's')
-    hide_button() # مخفی کردن دکمه ها
+    button_rt.ht()
+    button_left.ht() 
     print_cadr_button(-50)
     cadr.goto(-40, -135)
     cadr.color('red')
@@ -44,66 +46,17 @@ def draw_second_page():
     write_score.clear()
     write_time.clear()
     Laki.shapesize(4)
-    game_screen.onkey(previous_color, 'a')
-    game_screen.onkey(next_color, 'd')
+    game_screen.onkey(lambda: change_color(1), 'Right')
+    game_screen.onkey(lambda: change_color(-1), 'Left')
+    game_screen.onkey(draw_first_page, 'w')
     game_screen.onkey(lambda: None, 's')
-    show_button() # نمایش دکمه ها
-
-#### تابع سازنده لاک پشت ####
-def create_turtle(x=0, y=0, shape='classic', color_pen='Navy', color_turtle='Navy', shapesize=1 , show=False, photo=False, speed=0):
-    if photo :
-        game_screen.register_shape(shape)
-    tr = turtle.Turtle(shape)
-    if not show:
-        tr.ht()
-    tr.up()
-    tr.speed(speed)
-    tr.shapesize(shapesize)
-    tr.goto(x, y)
-    tr.color(color_pen, color_turtle)
-    return tr
-# ویژگی هر لاک پشت
-def create_turtles():
-    # ساختن لاکی
-    global Laki
-    Laki = create_turtle(shape='turtle', show=True, shapesize=2,
-                         color_pen='DarkGreen', color_turtle='DarkGreen',
-                         speed=6
-                         )
-    # ساختن غذا
-    global food
-    food = create_turtle(50, 0, 'PNG/ball.gif', show=True, photo=True)
-    # عکس رکورد جدید
-    global new_record
-    new_record = create_turtle(200, 200, 'PNG/new record.gif', photo=True)
-    # ساختن دکمه تغییر رنگ 
-    global button_rt
-    global button_left
-    button_rt = create_turtle(0, 0, 'arrow', 'Black', 'DarkRed', 2)
-    button_left = button_rt.clone()
-    button_left.left(180)
-    # چاپ زمان بازی
-    global write_time
-    write_time = create_turtle(275, 326)
-    global write_time_321
-    write_time_321 = create_turtle(-15, 10)
-    global write_time_60
-    write_time_60 = create_turtle(-130, 70)
-    # چاپ امتیاز
-    global write_score
-    write_score = create_turtle(-325, 326)
-    # چاپ کادر
-    global cadr
-    cadr = create_turtle()
+    button_rt.st()
+    button_left.st()
 
 # ساختن کادر صفحه
 def create_cadr_screen():
-    boundary_turtle = turtle.Turtle()
-    boundary_turtle.ht()  # مخفی کردن تورتل
+    boundary_turtle = create_turtle(325, 325, color_pen='DarkRed')
     boundary_turtle.width(4)
-    boundary_turtle.speed('fastest')
-    boundary_turtle.up()
-    boundary_turtle.goto(325, 325)
     boundary_turtle.down()
             # کشیدن مرز
     for _ in range(4):
@@ -134,60 +87,76 @@ def print_cadr_button(x = -80):
     cadr.end_fill()
     cadr.up()
 
-# نمایش دکمه ها 
-def show_button():
-    # نمایش دکمه راست
-    button_rt.goto(150, -40)
-    button_rt.write('(d)', font=('Arial', 14, 'bold'))
-    button_rt.goto(150, 0)
-    button_rt.st()
-    # نمایش دکمه چپ
-    button_left.goto(-170, -40)
-    button_left.write('(a)', font=('Arial', 14, 'bold'))
+#### تابع سازنده لاک پشت ####
+def create_turtle(x=0, y=0, shape='classic', color_pen='Navy', color_turtle='Navy', shapesize=1 , show=False, photo=False, speed=0):
+    if photo :
+        game_screen.register_shape(shape)
+    new_turtle = turtle.Turtle(shape)
+    if not show:
+        new_turtle.ht()
+    new_turtle.up()
+    new_turtle.speed(speed)
+    new_turtle.shapesize(shapesize)
+    new_turtle.goto(x, y)
+    new_turtle.color(color_pen, color_turtle)
+    return new_turtle
+# ویژگی هر لاک پشت
+def create_turtles():
+    # ساختن لاکی
+    global Laki
+    Laki = create_turtle(shape='turtle', show=True, shapesize=2,
+                         color_pen='DarkGreen', color_turtle='DarkGreen',
+                         speed=6
+                         )
+    # ساختن غذا
+    global food
+    food = create_turtle(50, 0, 'PNG/ball.gif', show=True, photo=True)
+    # عکس رکورد جدید
+    global new_record
+    new_record = create_turtle(200, 200, 'PNG/new record.gif', photo=True)
+    # ساختن دکمه تغییر رنگ 
+    global button_rt
+    global button_left
+    button_rt = create_turtle(150, 0, 'arrow', 'Black', 'DarkRed', 2)
+    button_left = button_rt.clone()
+    button_left.left(180)
     button_left.goto(-150, 0)
-    button_left.st()
-# پنهان کردن دکمه ها
-def hide_button():
-    button_rt.ht()
-    button_rt.clear()
-    button_left.ht()
-    button_left.clear()
+    # چاپ زمان بازی
+    global write_time
+    write_time = create_turtle(275, 326)
+    global write_time_321
+    write_time_321 = create_turtle(-15, 10)
+    global write_time_60
+    write_time_60 = create_turtle(-130, 70)
+    # چاپ امتیاز
+    global write_score
+    write_score = create_turtle(-325, 326)
+    # چاپ کادر
+    global cadr
+    cadr = create_turtle()
 
 # توابع تغییر رنگ لاک پشت با کیبرد
-def next_color():
+def change_color(direction):
+    """Change the turtle color based on the direction (next or previous)."""
     global color_index
-    color_index += 1
-    if color_index == 10:
-        color_index = 0
+    color_index = (color_index + direction) % len(AllColorLaki)  # Circular increment/decrement
     Laki.color(AllColorLaki[color_index])
-def previous_color():
-    global color_index
-    color_index -= 1
-    if color_index == -1:
-        color_index = 9
-    Laki.color(AllColorLaki[color_index])
-# توابع حرکتی با کیبرد
-def move_rt():
-    Laki.rt(30)
-def move_left():
-    Laki.left(30)
-def move_fd():
-    Laki.fd(10)
-def move_bd():
-    Laki.rt(180)
 
-# تغییر صفحه بازی
-def reset_game():
-    global page_number
-    if page_number == 1:
-        draw_second_page()
-        page_number = 2
-    else:
-        draw_first_page()
-        page_number = 1
+# توابع حرکتی با کیبرد
+def move(direction):
+    """Move the turtle in the specified direction."""
+    if direction == 'right':
+        Laki.rt(30)
+    elif direction == 'left':
+        Laki.left(30)
+    elif direction == 'forward':
+        Laki.fd(10)
+    elif direction == 'backward':
+        Laki.rt(180)
 
 # شروع بازی
 def setup_game_start():
+    """Initialize game settings and start the countdown."""
     score = 0
     new_record.ht()
     cadr.clear()
@@ -200,30 +169,36 @@ def setup_game_start():
     # چاپ امتياز
     write_score.clear()
     write_score.write(f'امتياز = {str(score)}', font = ('b koodak', 12, 'bold'))
-    # رفتن غذا به يک مکان تصادفي
+    
+    # Move food to a random location
     food.goto(randint(-290, 290), randint(-290, 290))
-    # چاپ (شما 60 ثانيه فرصت داريد)
     write_time_60.write('شما 60 ثانيه فرصت داريد', font = ('b koodak', 24, 'bold'))
+    
     for _ in range(3, 0, -1):
         write_time_321.write(str(_), font = ('b koodak', 36, 'bold'))
         sleep(1)
         write_time_321.clear()
+    
     write_time_60.clear()
+    
     #توابع حرکتي با کيبرد 
-    game_screen.onkey(move_rt, 'Right')
-    game_screen.onkey(move_left, 'Left')
-    game_screen.onkey(move_fd, 'Up')
-    game_screen.onkey(move_bd, 'Down')
+    game_screen.onkey(lambda: move('right'), 'Right')
+    game_screen.onkey(lambda: move('left'), 'Left')
+    game_screen.onkey(lambda: move('forward'), 'Up')
+    game_screen.onkey(lambda: move('backward'), 'Down')
+
     game_laki()# شروع بازی
+
 # تابع بازی
 def game_laki():
+    
     score = 0
     start = time()
     time_game2 = time() + 1
     while True:
         Laki.fd(1)
         # برخورد با ديوار
-        if Laki.xcor() > 310 or Laki.xcor() < -310 or Laki.ycor() > 310 or Laki.ycor() < -310 :
+        if abs(Laki.xcor()) > 310 or abs(Laki.ycor()) > 310 :
             Laki.rt(180)
             Laki.fd(10)
             score += -5
@@ -284,7 +259,7 @@ def end_game(score, time_now, start_game, game_result=True):
         food.write(f'رکورد = {str(record)}', font = ('b koodak', 16, 'bold'))
     # چاپ زمان باقی مانده
     food.goto(-130, -60)
-    food.write(f'زمان باقي مانده = {str(new_time)}', font = ('b koodak', 16, 'bold'))            # احتمال خطا
+    food.write(f'زمان باقي مانده = {str(new_time)}', font = ('b koodak', 16, 'bold'))
     # چاپ امتياز 
     food.goto(-130, -30)
     food.write(f'امتياز = {str(score)}', font = ('b koodak', 16, 'bold'))
@@ -295,7 +270,7 @@ def end_game(score, time_now, start_game, game_result=True):
     cadr.write('(s)شروع مجدد', font = ('b koodak', 20, 'bold'))
     # فعال کردن دکمه ها
     game_screen.onkey(setup_game_start, 's')
-    game_screen.onkey(reset_game, 'w')
+    game_screen.onkey(draw_second_page, 'w')
 
 def main():
     setup_screen()
@@ -306,7 +281,6 @@ def main():
     draw_first_page()
     # فعال سازی دکمه ها
     game_screen.listen()
-    game_screen.onkey(reset_game, 'w')
     game_screen.onkey(game_screen.bye, 'b')
     turtle.done()
 
